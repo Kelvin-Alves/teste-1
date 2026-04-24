@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Relatório de Evidências</title>
+
+
+<script src="./bibiotecas/jspdf.umd.min.js"></script>
+<link href="./bibiotecas/bootstrap.min.css" rel="stylesheet" >
+<link href="./bibiotecas/bootstrap-icons.css" rel="stylesheet">
+<script src="./bibiotecas/Sortable.min.js"></script>
+
+<link href="./bibiotecas/style.css" rel="stylesheet" >
+</head>
+
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top no-pdf">
+  <div class="container-fluid">
+
+    <span class="navbar-brand">
+      <i class="bi bi-clipboard-check"></i>
+      Templates do Relatório
+    </span>
+
+    <div class="dropdown">
+      <button class="btn btn-outline-light dropdown-toggle"
+              type="button"
+              data-bs-toggle="dropdown">
+        <i class="bi bi-lightning"></i> Aplicar Template
+      </button>
+
+      <ul class="dropdown-menu dropdown-menu-end">
+        <li>
+          <a class="dropdown-item" href="#" onclick="aplicarTemplate(1)">
+            Abertura da Cancela do lado A
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item" href="#" onclick="aplicarTemplate(2)">
+            Abertura da Cancela do lado B
+          </a>
+        </li>
+        <li>
+          <a class="dropdown-item" href="#" onclick="aplicarTemplate(3)">
+            Abertura das duas concela lado A e Lado B
+          </a>
+        </li>
+		<li>
+          <a class="dropdown-item" href="#" onclick="aplicarTemplate(4)">
+            Reset de MCA
+          </a>
+        </li>
+		<li>
+          <a class="dropdown-item" href="#" onclick="aplicarTemplate(5)">
+            Abertura das duas concela lado B e Lado A 
+          </a>
+        </li>
+        <li><hr class="dropdown-divider"></li>
+        <li>
+          <a class="dropdown-item text-danger" href="#" onclick="limparCampos()">
+            Limpar Campos
+          </a>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</nav>
+
+<div id="conteudoPDF" class="pdf-container">
+
+<h1>Relatório de Evidências </h1>
+
+<div id="dataHoraPdf"
+     style="display:none; font-size: 12px; text-align:right; margin-bottom:10px;">
+</div>
+
+
+
+<div class="row g-3 mb-3">
+
+    <!-- NOME DA FILIAL (OBRIGATÓRIO) -->
+    <div class="col-md-4">
+        <label class="form-label">Nome da Filial</label>
+        <input
+            id="filialInput"
+            type="text"
+            class="form-control"
+            placeholder="Ex: Filial Paranaguá">
+    </div>
+
+    <!-- NÚMERO DO INCIDENTE (OBRIGATÓRIO) -->
+    <div class="col-md-4">
+        <label class="form-label">Número do Incidente</label>
+        <input
+            id="incidenteInput"
+            type="text"
+            class="form-control"
+            placeholder="Ex: INC00012345">
+    </div>
+
+    <!-- NOME DO FIELD (OBRIGATÓRIO) -->
+    <div class="col-md-4">
+        <label class="form-label">Nome do Field</label>
+        <input
+            id="fieldInput"
+            type="text"
+            class="form-control"
+            placeholder="Ex: Kelvin Alves">
+    </div>
+
+</div>
+
+
+
+<h2 class="mb-3">Orientações de Evidências Necessárias</h2>
+
+<div class="table-responsive">
+    <table class="table table-bordered table-striped align-middle">
+        <thead class="table-light">
+            <tr>
+                <th style="width: 80px;">Item</th>
+                <th>Descrição</th>
+                <th>Evidência</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>Observação do que foi realizado</td>
+                <td>Descrição detalhada do serviço executado</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>Foto do Módulo – Antes</td>
+                <td>Imagem da condição inicial do módulo</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>Foto do Módulo – Durante</td>
+                <td>Imagem do momento da execução</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>Foto do Módulo – Depois</td>
+                <td>Imagem do estado final do módulo</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+<div class="card mb-4">
+    <div class="card-body">
+
+        <h5 class="card-title mb-3">Observação do que foi realizado</h5>
+
+        <textarea
+            id="obsInput"
+            class="form-control"
+            rows="4"
+            placeholder="Descreva o que foi realizado"></textarea>
+
+        <!-- Este será usado SOMENTE no PDF -->
+        <div id="obsPdf"
+             style="display:none; white-space: pre-wrap;"
+             class="mt-2">
+        </div>
+
+    </div>
+</div>
+
+	<h2>Evidências</h2>
+	
+<div class="fab-container no-pdf">
+
+    <div class="fab-item" onclick="adicionarEvidencia()">
+        <button
+            class="btn btn-primary rounded-circle shadow fab-btn"
+            
+            title="Adicionar Evidência">
+            <i class="bi bi-plus"></i>
+        </button>
+        <span class="fab-label">Adicionar Evidência</span>
+    </div>
+
+    <div class="fab-item" id="btnFinalizar" onclick="exportarPDF()">
+
+		<button 
+		  id="btnFinalizar"
+		  class="btn btn-success rounded-circle shadow fab-btn"
+		  title="Finalizar Documento"
+		  disabled>
+		  <i class="bi bi-file-earmark-pdf"></i>
+		  
+		</button>
+		<span class="fab-label">Finalizar</span>
+	</div>
+
+</div>
+
+<div id="lista"></div>
+</div>
+
+<script src="./bibiotecas/script.js"></script>
+
+
+
+
+<script src="./bibiotecas/bootstrap.bundle.min.js"></script>
+</body>
+</html>
