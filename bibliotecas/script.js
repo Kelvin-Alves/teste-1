@@ -417,6 +417,9 @@ async function exportarPDF() {
 	  const boxH = 16;
 	  const gap = 5;
 	  const boxW = (180 - gap * 2) / 3; // divide igualment
+	  
+	  const limiteInferior = 270; // acima do rodapé
+
 
 
 	function campo(x, y, label, value) {
@@ -562,28 +565,17 @@ async function exportarPDF() {
   /* IMAGEM */
 
 	if (img) {
+	 
 	  const boxW = 180;
 	  const boxH = 85;
 
 	  const dims = ajustarImagemQuadrado(doc, img, boxW, boxH);
-
-	  // centraliza dentro do quadrado
 	  const xImg = margemLeft + (boxW - dims.w) / 2;
 	  const yImg = yBase + (boxH - dims.h) / 2;
 
-	  // moldura preta (quadrado)
-	  doc.setDrawColor(0);
 	  doc.rect(margemLeft, yBase, boxW, boxH);
+	  doc.addImage(img, dims.type, xImg, yImg, dims.w, dims.h);
 
-	  // imagem preenchendo o quadrado
-	  doc.addImage(
-		img,
-		dims.type,
-		xImg,
-		yImg,
-		dims.w,
-		dims.h
-	  );
 	}
 });
   
