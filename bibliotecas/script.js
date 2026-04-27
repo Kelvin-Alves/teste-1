@@ -530,7 +530,7 @@ async function exportarPDF() {
 	const imgMaxH = 85
 	
 	/* VARIÁVEIS DE LAYOUT DA EVIDÊNCIA */
-	const tituloAltura = 5;
+	const tituloAltura = 6;
 	const descricaoAltura = 22;
 	const espacamento = 5;
 	const imagemAltura = areaAltura - tituloAltura - descricaoAltura - espacamento;
@@ -539,45 +539,61 @@ async function exportarPDF() {
   /* ===== EVIDÊNCIAS ===== */
   evidencias.forEach((ev, index) => {
 
-  // nova página a cada 2 evidências
+  // === nova página a cada 2 evidências ===
   if (index % 2 === 0 && index !== 0) {
     doc.addPage();
     margemTop = desenharCabecalho(doc);
   }
 
-  // ✅ base vertical da evidência
+  // posição base da evidência
   let yBase = margemTop + (index % 2) * areaAltura;
 
   const texto = ev.querySelector(".descricao-input")?.value || "-";
   const img = ev.querySelector("img");
 
-  /* ===== TÍTULO (TOPO) ===== */
+  /* ======================================================
+     CAIXA EXTERNA DA EVIDÊNCIA  (ISSO ESTAVA FALTANDO!)
+     ====================================================== */
+  doc.setDrawColor(0);
+  doc.rect(margemLeft, yBase, 180, areaAltura);
+
+  // padding interno
+  yBase += 6;
+
+  /* ================= TÍTULO ================= */
   doc.setFontSize(13);
-  doc.text(`Evidência ${index + 1}`, margemLeft, yBase);
+  doc.text(`Evidência ${index + 1}`, margemLeft + 4, yBase);
   yBase += tituloAltura;
 
-  /* ===== DESCRIÇÃO ===== */
-  doc.setFontSize(10);
-  doc.rect(margemLeft, yBase, 180, descricaoAltura);
+  // linha separadora
+  doc.setDrawColor(180);
+  doc.line(margemLeft + 2, yBase - 2, margemLeft + 178, yBase - 2);
 
-  const textoSplit = doc.splitTextToSize(texto, 176);
-  doc.text(textoSplit.slice(0, 3), margemLeft + 2, yBase + 6);
+  /* ================= DESCRIÇÃO ================= */
+  doc.setFontSize(10);
+  doc.rect(margemLeft + 4, yBase, 172, descricaoAltura);
+
+  const textoSplit = doc.splitTextToSize(texto, 168);
+  doc.text(textoSplit.slice(0, 3), margemLeft + 6, yBase + 6);
 
   yBase += descricaoAltura + espacamento;
 
-  /* ===== IMAGEM ===== */
+  // linha separadora
+  doc.setDrawColor(180);
+  doc.line(margemLeft + 2, yBase - 2, margemLeft + 178, yBase - 2);
+
+  /* ================= IMAGEM ================= */
   if (img) {
 
-    const boxW = 180;
+    const boxW = 172;
     const boxH = imagemAltura;
 
-    // ✅ CONTAIN (não vaza)
     const dims = ajustarImagem(doc, img, boxW, boxH);
 
-    const xImg = margemLeft + (boxW - dims.w) / 2;
+    const xImg = margemLeft + 4 + (boxW - dims.w) / 2;
     const yImg = yBase + (boxH - dims.h) / 2;
 
-    doc.rect(margemLeft, yBase, boxW, boxH);
+    doc.rect(margemLeft + 4, yBase, boxW, boxH);
 
     doc.addImage(
       img,
@@ -590,6 +606,9 @@ async function exportarPDF() {
   }
 
 });
+  
+  
+  
 	const totalPaginas = doc.getNumberOfPages();
 
 	for (let i = 1; i <= totalPaginas; i++) {
