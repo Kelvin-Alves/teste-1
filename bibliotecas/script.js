@@ -314,7 +314,7 @@ function ajustarImagemQuadrado(doc, img, boxW, boxH) {
   const props = doc.getImageProperties(img);
 
   // usa MAX (fill), não min (contain)
-  const ratio = Math.max(
+  const ratio = Math.min(
     boxW / props.width,
     boxH / props.height
   );
