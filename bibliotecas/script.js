@@ -295,18 +295,19 @@ function carregarImagem(input, id) {
 }
 
 /* ===== FUNÇÃO AUXILIAR: AJUSTAR IMAGEM ===== */
-function ajustarImagem(doc, img, maxW, maxH) {
-  const props = doc.getImageProperties(img);
+function ajustarImagem(doc, img, boxW, boxH) {
+  const imgW = img.naturalWidth;
+  const imgH = img.naturalHeight;
 
-  const ratio = Math.min(
-    maxW / props.width,
-    maxH / props.height
+  const scale = Math.max(
+    boxW / imgW,
+    boxH / imgH
   );
 
   return {
-    w: props.width * ratio,
-    h: props.height * ratio,
-    type: props.fileType
+    w: imgW * scale,
+    h: imgH * scale,
+    type: "JPEG"
   };
 }
 
@@ -591,7 +592,10 @@ async function exportarPDF() {
         margemLeft +
         (larguraBox - dims.w) / 2;
 
-      const yImg = yBase;
+      
+	const yImg =
+	yBase + (imagemAltura - dims.h) / 2;
+
 
       doc.addImage(
         img,
