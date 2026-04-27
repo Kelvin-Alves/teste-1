@@ -327,7 +327,7 @@ function ajustarImagemQuadrado(doc, img, boxW, boxH) {
   );
 
   /* aumenta 8% além do normal */
-  let ratio = ratioContain * 1.08;
+  let ratio = ratioContain * 2;
 
   let w = props.width * ratio;
   let h = props.height * ratio;
