@@ -299,7 +299,7 @@ function ajustarImagem(doc, img, boxW, boxH) {
   const imgW = img.naturalWidth;
   const imgH = img.naturalHeight;
 
-  const scale = Math.max(
+  const scale = Math.min(
     boxW / imgW,
     boxH / imgH
   );
@@ -594,7 +594,7 @@ async function exportarPDF() {
 
       
 	const yImg =
-	yBase + (imagemAltura - dims.h) / 2;
+	yBase;
 
 
       doc.addImage(
