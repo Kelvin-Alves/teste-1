@@ -321,19 +321,34 @@ function ajustarImagem(doc, img, maxW, maxH) {
 function ajustarImagemQuadrado(doc, img, boxW, boxH) {
   const props = doc.getImageProperties(img);
 
-  // usa MAX (fill), não min (contain)
-  const ratio = Math.max(
+  const ratioContain = Math.min(
     boxW / props.width,
     boxH / props.height
   );
 
-  const w = props.width * ratio;
-  const h = props.height * ratio;
+  /* aumenta 8% além do normal */
+  let ratio = ratioContain * 1.08;
+
+  let w = props.width * ratio;
+  let h = props.height * ratio;
+
+  /* nunca ultrapassar moldura */
+  if (w > boxW) {
+    const fix = boxW / w;
+    w *= fix;
+    h *= fix;
+  }
+
+  if (h > boxH) {
+    const fix = boxH / h;
+    w *= fix;
+    h *= fix;
+  }
 
   return {
     w,
     h,
-    type: props.fileType
+    type: props.fileType || "JPEG"
   };
 }
 
