@@ -545,7 +545,7 @@ async function exportarPDF() {
 	  let yBase = margemTop + (index % 2) * areaAltura;
 
 	  const texto = ev.querySelector(".descricao-input")?.value || "";
-	  const img = ev.querySelector("img")?.src;
+	  const img = ev.querySelector("img");
 
 	  /* TÍTULO */
 	  doc.setFontSize(13);
