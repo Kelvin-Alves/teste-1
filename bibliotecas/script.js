@@ -349,7 +349,24 @@ function desenharCabecalho(doc) {
   // retorna onde o conteúdo deve começar
   return topo + logoH + 12;
 }
+function desenharRodape(doc, texto) {
+  const alturaPagina = doc.internal.pageSize.getHeight();
 
+  doc.setFontSize(9);
+  doc.setTextColor(100);
+
+  // linha separadora (opcional)
+  doc.setDrawColor(200);
+  doc.line(15, alturaPagina - 20, 195, alturaPagina - 20);
+
+  // texto centralizado
+  doc.text(
+    texto,
+    105,
+    alturaPagina - 10,
+    { align: "center" }
+  );
+}
 
 async function exportarPDF() {
 	  if (!validarCamposObrigatorios()) return;
@@ -570,18 +587,17 @@ async function exportarPDF() {
 	}
 });
   
+	
 	const totalPaginas = doc.getNumberOfPages();
 
 	for (let i = 1; i <= totalPaginas; i++) {
 	  doc.setPage(i);
-	  doc.setFontSize(9);
-	  doc.text(
-		`${incidente} | ${dataHora} | Página ${i} de ${totalPaginas}`,
-		105,
-		290,
-		{ align: "center" }
+	  desenharRodape(
+		doc,
+		`${incidente} | ${dataHora} | Página ${i} de ${totalPaginas}`
 	  );
 	}
+
 
   doc.save(`${incidente}_Evidencias.pdf`);
   atualizarEstadoBotaoFinalizar()  
