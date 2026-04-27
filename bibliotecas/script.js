@@ -369,295 +369,264 @@ function desenharRodape(doc, texto) {
 }
 
 async function exportarPDF() {
-	  if (!validarCamposObrigatorios()) return;
-	  
-	  
-		const dataHora = new Date().toLocaleString("pt-BR", {
-		  dateStyle: "short",
-		  timeStyle: "short"
-		});
+  if (!validarCamposObrigatorios()) return;
 
-	  
+  const dataHora = new Date().toLocaleString("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short"
+  });
 
-	  const { jsPDF } = window.jspdf;
-	  const doc = new jsPDF("p", "mm", "a4");
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("p", "mm", "a4");
 
-	  const filial = document.getElementById("filialInput").value;
-	  const incidente = document.getElementById("incidenteInput").value;
-	  const field = document.getElementById("fieldInput").value;
-	  const observacao = document.getElementById("obsInput").value;
-	  
-	  
-	
-	const imgEsq = document.getElementById("logoEsq");
-	const imgDir = document.getElementById("logoDir");
+  const filial = document.getElementById("filialInput").value;
+  const incidente = document.getElementById("incidenteInput").value;
+  const field = document.getElementById("fieldInput").value;
+  const observacao = document.getElementById("obsInput").value;
 
+  /* ===============================
+     CABEÇALHO PRIMEIRA PÁGINA
+  ============================== */
+  let y = desenharCabecalho(doc);
 
-	
-	  
+  /* TÍTULO */
+  doc.setFontSize(18);
+  doc.text("Relatório de Evidências", 105, y, { align: "center" });
+  y += 12;
 
+  /* ===============================
+     CAMPOS SUPERIORES
+  ============================== */
+  const startX = 15;
+  const boxH = 16;
+  const gap = 5;
+  const boxW = (180 - gap * 2) / 3;
 
-	// posição inicial do conteúdo
-	  let y = desenharCabecalho(doc);
+  function campo(x, yPos, label, value) {
+    doc.setFontSize(9);
+    doc.text(label, x, yPos - 3);
 
+    doc.rect(x, yPos, boxW, boxH);
 
+    doc.setFontSize(10);
 
+    const linhas = doc.splitTextToSize(value || "-", boxW - 4);
 
-	  /* ===== TÍTULO ===== */
-	  doc.setFontSize(18);
-	  doc.text("Relatório de Evidências", 105, y, { align: "center" });
-	  y += 12;
+    let yTexto = yPos + 6;
 
-	  /* ===== CAMPOS (3 colunas) ===== */
-	  doc.setFontSize(10);
-
-	  
-	  const startX = 15;
-	  const startY = y;
-	  const boxH = 16;
-	  const gap = 5;
-	  const boxW = (180 - gap * 2) / 3; // divide igualment
-	  
-	  
-
-
-
-	function campo(x, y, label, value) {
-		  // Label
-		  doc.setFontSize(9);
-		  doc.text(label, x, y - 3);
-
-		  // Caixa
-		  doc.rect(x, y, boxW, boxH);
-
-		  // Texto com quebra automática
-		  doc.setFontSize(10);
-
-		  const padding = 2;
-		  const larguraTexto = boxW - padding * 2;
-
-		  const linhas = doc.splitTextToSize(value || "-", larguraTexto);
-
-		  // altura inicial do texto
-		  let yTexto = y + 6;
-
-		  //desenha no máximo 2 linhas (para não estourar)
-		  linhas.slice(0, 2).forEach(linha => {
-			doc.text(linha, x + padding, yTexto);
-			yTexto += 5;
-		  });
-	}
-
-	campo(startX, y, "Nome da Filial", filial);
-	campo(startX + boxW + 5, y, "Número do Incidente", incidente);
-	campo(startX + (boxW * 2) + 10, y, "Nome do Field", field);
-
-	y += 25;
-
-	/* ===== TÍTULO TABELA ===== */
-	doc.setFontSize(14);
-	doc.text("Orientações de Evidências Necessárias", 15, y);
-	y += 6;
-
-	/* ===== TABELA ===== */
-	doc.setFontSize(10);
-
-	const colX = [15, 30, 95];
-	const colW = [15, 65, 100];
-	const rowH = 8;
-
-	const headers = ["Item", "Descrição", "Evidência"];
-	headers.forEach((h, i) => {
-	doc.rect(colX[i], y, colW[i], rowH);
-	doc.text(h, colX[i] + 2, y + 5);
-	});
-
-	y += rowH;
-
-	const rows = [
-	["1", "Observação do que foi realizado", "Descrição detalhada do serviço executado"],
-	["2", "Foto do Módulo – Antes", "Imagem da condição inicial do módulo"],
-	["3", "Foto do Módulo – Durante", "Imagem do momento da execução"],
-	["4", "Foto do Módulo – Depois", "Imagem do estado final do módulo"]
-	];
-
-	rows.forEach(r => {
-		r.forEach((txt, i) => {
-		  doc.rect(colX[i], y, colW[i], rowH);
-		  doc.text(txt, colX[i] + 2, y + 5);
-		});
-		y += rowH;
-	});
-
-	y += 8;
-
-	/* ===== OBSERVAÇÃO ===== */
-	doc.setFontSize(14);
-	doc.text("Observação do que foi realizado", 15, y);
-	y += 5;
-
-
-	doc.rect(15, y, 180, 25);
-	doc.setFontSize(10);
-	const obsSplit = doc.splitTextToSize(observacao, 176);
-	doc.text(obsSplit, 17, y + 6);
-
-	// ✅ avança o y após a observação
-	y += 50;
-
-	// ✅ agora sim escreve o texto mais para baixo
-	doc.setFontSize(14);
-	
-	doc.text(
-	  "Evidências nas próximas páginas",
-	  105,   // centro da página A4
-	  y,
-	  { align: "center" }
-	);
-
-
-	// ✅ pequeno espaço antes de trocar de página
-	y += 5;
-
-    
-	doc.addPage();
-	```javascript
-/* ===============================
-   PÁGINAS DE EVIDÊNCIAS
-   2 evidências por página
-================================= */
-
-doc.addPage();
-
-const evidencias = [...document.querySelectorAll(".evidencia")];
-
-let margemTop = desenharCabecalho(doc);
-
-const margemLeft = 15;
-const larguraBox = 180;
-
-/* ALTURA DINÂMICA DA PÁGINA */
-const alturaPagina = doc.internal.pageSize.getHeight();
-
-const margemCabecalho = margemTop;
-const margemRodape = 20;
-
-/* divide a página em 2 blocos */
-const areaAltura =
-  (alturaPagina - margemCabecalho - margemRodape) / 2;
-
-
-/* LOOP DAS EVIDÊNCIAS */
-evidencias.forEach((ev, index) => {
-
-  /* nova página a cada 2 evidências */
-  if (index % 2 === 0 && index !== 0) {
-    doc.addPage();
-    margemTop = desenharCabecalho(doc);
+    linhas.slice(0, 2).forEach(linha => {
+      doc.text(linha, x + 2, yTexto);
+      yTexto += 5;
+    });
   }
 
-  const bloco = index % 2; // 0 cima | 1 baixo
+  campo(startX, y, "Nome da Filial", filial);
+  campo(startX + boxW + gap, y, "Número do Incidente", incidente);
+  campo(startX + (boxW * 2) + (gap * 2), y, "Nome do Field", field);
 
-  let yBase = margemTop + (bloco * areaAltura);
+  y += 25;
 
-  const texto =
-    ev.querySelector(".descricao-input")?.value || "-";
+  /* ===============================
+     TABELA
+  ============================== */
+  doc.setFontSize(14);
+  doc.text("Orientações de Evidências Necessárias", 15, y);
+  y += 6;
 
-  const img = ev.querySelector("img");
+  const colX = [15, 30, 95];
+  const colW = [15, 65, 100];
+  const rowH = 8;
 
-  /* LAYOUT INTERNO */
-  const paddingTop = 6;
-  const tituloAltura = 8;
-  const descricaoAltura = 22;
-  const espacamento = 5;
-  const paddingBottom = 5;
-
-  const imagemAltura =
-    areaAltura -
-    paddingTop -
-    tituloAltura -
-    descricaoAltura -
-    espacamento -
-    paddingBottom;
-
-  yBase += paddingTop;
-
-  /* ==========================
-     TÍTULO
-  ========================== */
-  doc.setFontSize(13);
-  doc.text(`Evidência ${index + 1}`, margemLeft, yBase);
-
-  yBase += tituloAltura;
-
-  /* ==========================
-     DESCRIÇÃO
-  ========================== */
-  doc.rect(
-    margemLeft,
-    yBase,
-    larguraBox,
-    descricaoAltura
-  );
+  const headers = ["Item", "Descrição", "Evidência"];
 
   doc.setFontSize(10);
 
-  const textoSplit = doc.splitTextToSize(
-    texto,
-    larguraBox - 4
-  );
+  headers.forEach((h, i) => {
+    doc.rect(colX[i], y, colW[i], rowH);
+    doc.text(h, colX[i] + 2, y + 5);
+  });
 
-  doc.text(
-    textoSplit.slice(0, 3),
-    margemLeft + 2,
-    yBase + 6
-  );
+  y += rowH;
 
-  yBase += descricaoAltura + espacamento;
+  const rows = [
+    ["1", "Observação do que foi realizado", "Descrição detalhada do serviço executado"],
+    ["2", "Foto do Módulo – Antes", "Imagem da condição inicial do módulo"],
+    ["3", "Foto do Módulo – Durante", "Imagem do momento da execução"],
+    ["4", "Foto do Módulo – Depois", "Imagem do estado final do módulo"]
+  ];
 
-  /* ==========================
-     IMAGEM
-  ========================== */
-  doc.rect(
-    margemLeft,
-    yBase,
-    larguraBox,
-    imagemAltura
-  );
+  rows.forEach(r => {
+    r.forEach((txt, i) => {
+      doc.rect(colX[i], y, colW[i], rowH);
+      doc.text(txt, colX[i] + 2, y + 5);
+    });
 
-  if (img) {
+    y += rowH;
+  });
 
-    const dims = ajustarImagem(
-      doc,
-      img,
+  y += 8;
+
+  /* ===============================
+     OBSERVAÇÃO
+  ============================== */
+  doc.setFontSize(14);
+  doc.text("Observação do que foi realizado", 15, y);
+  y += 5;
+
+  doc.rect(15, y, 180, 25);
+
+  doc.setFontSize(10);
+
+  const obsSplit = doc.splitTextToSize(observacao || "-", 176);
+  doc.text(obsSplit.slice(0, 4), 17, y + 6);
+
+  y += 35;
+
+  doc.setFontSize(14);
+  doc.text("Evidências nas próximas páginas", 105, y, {
+    align: "center"
+  });
+
+  /* ===============================
+     PÁGINAS DE EVIDÊNCIAS
+     2 POR PÁGINA
+  ============================== */
+  doc.addPage();
+
+  const evidencias = [...document.querySelectorAll(".evidencia")];
+
+  let margemTop = desenharCabecalho(doc);
+
+  const margemLeft = 15;
+  const larguraBox = 180;
+
+  const alturaPagina = doc.internal.pageSize.getHeight();
+  const margemRodape = 20;
+
+  const areaAltura =
+    (alturaPagina - margemTop - margemRodape) / 2;
+
+  evidencias.forEach((ev, index) => {
+
+    /* nova página a cada 2 evidências */
+    if (index % 2 === 0 && index !== 0) {
+      doc.addPage();
+      margemTop = desenharCabecalho(doc);
+    }
+
+    const bloco = index % 2;
+
+    let yBase =
+      margemTop + (bloco * areaAltura);
+
+    const texto =
+      ev.querySelector(".descricao-input")?.value || "-";
+
+    const img =
+      ev.querySelector("img");
+
+    const paddingTop = 6;
+    const tituloAltura = 8;
+    const descricaoAltura = 22;
+    const espacamento = 5;
+    const paddingBottom = 5;
+
+    const imagemAltura =
+      areaAltura -
+      paddingTop -
+      tituloAltura -
+      descricaoAltura -
+      espacamento -
+      paddingBottom;
+
+    yBase += paddingTop;
+
+    /* título */
+    doc.setFontSize(13);
+    doc.text(`Evidência ${index + 1}`, margemLeft, yBase);
+
+    yBase += tituloAltura;
+
+    /* descrição */
+    doc.rect(
+      margemLeft,
+      yBase,
+      larguraBox,
+      descricaoAltura
+    );
+
+    doc.setFontSize(10);
+
+    const textoSplit = doc.splitTextToSize(
+      texto,
+      larguraBox - 4
+    );
+
+    doc.text(
+      textoSplit.slice(0, 3),
+      margemLeft + 2,
+      yBase + 6
+    );
+
+    yBase += descricaoAltura + espacamento;
+
+    /* box imagem */
+    doc.rect(
+      margemLeft,
+      yBase,
       larguraBox,
       imagemAltura
     );
 
-    const xImg =
-      margemLeft +
-      (larguraBox - dims.w) / 2;
+    if (img) {
 
-    const yImg =
-      yBase +
-      (imagemAltura - dims.h) / 2;
+      const dims = ajustarImagem(
+        doc,
+        img,
+        larguraBox,
+        imagemAltura
+      );
 
-    doc.addImage(
-      img,
-      dims.type,
-      xImg,
-      yImg,
-      dims.w,
-      dims.h
+      const xImg =
+        margemLeft +
+        (larguraBox - dims.w) / 2;
+
+      const yImg =
+        yBase +
+        (imagemAltura - dims.h) / 2;
+
+      doc.addImage(
+        img,
+        dims.type,
+        xImg,
+        yImg,
+        dims.w,
+        dims.h
+      );
+    }
+  });
+
+  /* ===============================
+     RODAPÉ E PAGINAÇÃO
+  ============================== */
+  const totalPaginas = doc.getNumberOfPages();
+
+  for (let i = 1; i <= totalPaginas; i++) {
+    doc.setPage(i);
+
+    desenharRodape(
+      doc,
+      `${incidente} | ${dataHora} | Página ${i} de ${totalPaginas}`
     );
   }
 
-});
+  /* ===============================
+     SALVAR
+  ============================== */
+  doc.save(`${incidente}_Evidencias.pdf`);
 
-
-
-});
-  
+  atualizarEstadoBotaoFinalizar();
+}  
   
 	const totalPaginas = doc.getNumberOfPages();
 
