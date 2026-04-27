@@ -564,19 +564,37 @@ async function exportarPDF() {
 
   /* IMAGEM */
 
-	if (img) {
-	 
-	  const boxW = 180;
-	  const boxH = 85;
+	
+/* IMAGEM */
+		if (img) {
 
-	  const dims = ajustarImagemQuadrado(doc, img, boxW, boxH);
-	  const xImg = margemLeft + (boxW - dims.w) / 2;
-	  const yImg = yBase + (boxH - dims.h) / 2;
+		  const paginaAltura = doc.internal.pageSize.getHeight();
+		  const rodapeAltura = 25;
 
-	  doc.rect(margemLeft, yBase, boxW, boxH);
-	  doc.addImage(img, dims.type, xImg, yImg, dims.w, dims.h);
+		  // espaço real disponível até o rodapé
+		  const boxH = paginaAltura - rodapeAltura - yBase;
+		  const boxW = 180;
 
-	}
+		  const dims = ajustarImagemQuadrado(doc, img, boxW, boxH);
+
+		  // centraliza dentro do espaço disponível
+		  const xImg = margemLeft + (boxW - dims.w) / 2;
+		  const yImg = yBase + (boxH - dims.h) / 2;
+
+		  // opcional: moldura
+		  doc.setDrawColor(0);
+		  doc.rect(margemLeft, yBase, boxW, boxH);
+
+		  doc.addImage(
+			img,
+			dims.type,
+			xImg,
+			yImg,
+			dims.w,
+			dims.h
+		  );
+		}
+
 });
   
 	
