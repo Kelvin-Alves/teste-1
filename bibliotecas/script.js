@@ -521,67 +521,126 @@ async function exportarPDF() {
 
     
 	doc.addPage();
-	const evidencias = [...document.querySelectorAll(".evidencia")];
-	
-	let margemTop = desenharCabecalho(doc);
-	const margemLeft = 15;
-	const espacamentoEntreEvidencias = 10;
-	let yAtual = desenharCabecalho(doc) + 10;
-	const imgMaxW = 180;
-	const imgMaxH = 85
-	
-	/* VARIÁVEIS DE LAYOUT DA EVIDÊNCIA */
-	const tituloAltura = 6;
-	const descricaoAltura = 22;
-	const espacamento = 4;
-	const areaAltura = 130
-	const alturaPagina = doc.internal.pageSize.getHeight();
-	const alturaRodape = 25; // margem de segurança
-	const limiteInferior = alturaPagina - alturaRodape;
-    const imagemAltura = areaAltura - tituloAltura - descricaoAltura - espacamento;
+	```javascript
+/* ===============================
+   PÁGINAS DE EVIDÊNCIAS
+   2 evidências por página
+================================= */
+
+doc.addPage();
+
+const evidencias = [...document.querySelectorAll(".evidencia")];
+
+let margemTop = desenharCabecalho(doc);
+
+const margemLeft = 15;
+const larguraBox = 180;
+
+/* ALTURA DINÂMICA DA PÁGINA */
+const alturaPagina = doc.internal.pageSize.getHeight();
+
+const margemCabecalho = margemTop;
+const margemRodape = 20;
+
+/* divide a página em 2 blocos */
+const areaAltura =
+  (alturaPagina - margemCabecalho - margemRodape) / 2;
 
 
-
-  /* ===== EVIDÊNCIAS ===== */
+/* LOOP DAS EVIDÊNCIAS */
 evidencias.forEach((ev, index) => {
 
-  const texto = ev.querySelector(".descricao-input")?.value || "-";
-  const img = ev.querySelector("img");
-
-  let alturaDescricao = 22;
-  let alturaImagem = 70;
-  let alturaTotal = 10 + alturaDescricao + 5 + alturaImagem + 10;
-
-  // se não couber na página → nova página
-  if (yAtual + alturaTotal > 270) {
+  /* nova página a cada 2 evidências */
+  if (index % 2 === 0 && index !== 0) {
     doc.addPage();
-    yAtual = desenharCabecalho(doc) + 10;
+    margemTop = desenharCabecalho(doc);
   }
 
-  /* TÍTULO */
+  const bloco = index % 2; // 0 cima | 1 baixo
+
+  let yBase = margemTop + (bloco * areaAltura);
+
+  const texto =
+    ev.querySelector(".descricao-input")?.value || "-";
+
+  const img = ev.querySelector("img");
+
+  /* LAYOUT INTERNO */
+  const paddingTop = 6;
+  const tituloAltura = 8;
+  const descricaoAltura = 22;
+  const espacamento = 5;
+  const paddingBottom = 5;
+
+  const imagemAltura =
+    areaAltura -
+    paddingTop -
+    tituloAltura -
+    descricaoAltura -
+    espacamento -
+    paddingBottom;
+
+  yBase += paddingTop;
+
+  /* ==========================
+     TÍTULO
+  ========================== */
   doc.setFontSize(13);
-  doc.text(`Evidência ${index + 1}`, 15, yAtual);
+  doc.text(`Evidência ${index + 1}`, margemLeft, yBase);
 
-  yAtual += 8;
+  yBase += tituloAltura;
 
-  /* DESCRIÇÃO */
-  doc.rect(15, yAtual, 180, alturaDescricao);
+  /* ==========================
+     DESCRIÇÃO
+  ========================== */
+  doc.rect(
+    margemLeft,
+    yBase,
+    larguraBox,
+    descricaoAltura
+  );
 
-  const textoSplit = doc.splitTextToSize(texto, 176);
   doc.setFontSize(10);
-  doc.text(textoSplit.slice(0, 3), 17, yAtual + 6);
 
-  yAtual += alturaDescricao + 5;
+  const textoSplit = doc.splitTextToSize(
+    texto,
+    larguraBox - 4
+  );
 
-  /* IMAGEM */
+  doc.text(
+    textoSplit.slice(0, 3),
+    margemLeft + 2,
+    yBase + 6
+  );
+
+  yBase += descricaoAltura + espacamento;
+
+  /* ==========================
+     IMAGEM
+  ========================== */
+  doc.rect(
+    margemLeft,
+    yBase,
+    larguraBox,
+    imagemAltura
+  );
+
   if (img) {
 
-    doc.rect(15, yAtual, 180, alturaImagem);
+    const dims = ajustarImagem(
+      doc,
+      img,
+      larguraBox,
+      imagemAltura
+    );
 
-    const dims = ajustarImagem(doc, img, 180, alturaImagem);
+    const xImg =
+      margemLeft +
+      (larguraBox - dims.w) / 2;
 
-    const xImg = 15 + (180 - dims.w) / 2;
-    const yImg = yAtual + (alturaImagem - dims.h) / 2;
+    const yImg =
+      yBase +
+      (imagemAltura - dims.h) / 2;
 
     doc.addImage(
       img,
@@ -593,7 +652,9 @@ evidencias.forEach((ev, index) => {
     );
   }
 
-  yAtual += alturaImagem + espacamentoEntreEvidencias;
+});
+
+
 
 });
   
