@@ -371,8 +371,8 @@ async function exportarPDF() {
 	  return;
 	}
 
-	  doc.addImage(imgEsq.src, "PNG", margem, topo, logoW, logoH);
-	  doc.addImage(imgDir.src, "PNG", 210 - margem - logoW, topo, logoW, logoH);
+	  doc.addImage(imgEsq, "PNG", margem, topo, logoW, logoH);
+	  doc.addImage(imgDir, "PNG", 210 - margem - logoW, topo, logoW, logoH);
 
 	// linha separadora
 	  doc.setDrawColor(180);
