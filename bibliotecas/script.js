@@ -314,7 +314,7 @@ function ajustarImagemQuadrado(doc, img, boxW, boxH) {
   const props = doc.getImageProperties(img);
 
   // usa MAX (fill), não min (contain)
-  const ratio = Math.min(
+  const ratio = Math.max(
     boxW / props.width,
     boxH / props.height
   );
@@ -528,75 +528,68 @@ async function exportarPDF() {
 	const areaAltura = 130; // espaço vertical por evidência
 	const imgMaxW = 180;
 	const imgMaxH = 85
+	
+	/* VARIÁVEIS DE LAYOUT DA EVIDÊNCIA */
+	const tituloAltura = 6;
+	const descricaoAltura = 22;
+	const espacamento = 5;
+	const imagemAltura = areaAltura - (tituloAltura + descricaoAltura + espacamento);
+
 
   /* ===== EVIDÊNCIAS ===== */
 
 	evidencias.forEach((ev, index) => {
 
-	  // Nova página a cada 2 evidências
-	  
-	  if (index % 2 === 0 && index !== 0) {
-		doc.addPage();
-		margemTop = desenharCabecalho(doc);
-	  }
+  // ✅ Nova página a cada 2 evidências
+  if (index % 2 === 0 && index !== 0) {
+    doc.addPage();
+    margemTop = desenharCabecalho(doc);
+  }
 
+  // ✅ Posição base da evidência
+  let yBase = margemTop + (index % 2) * areaAltura;
 
-	  // posição vertical (topo ou metade da página)
-	  let yBase = margemTop + (index % 2) * areaAltura;
+  const texto = ev.querySelector(".descricao-input")?.value || "-";
+  const img = ev.querySelector("img");
 
-	  const texto = ev.querySelector(".descricao-input")?.value || "";
-	  const img = ev.querySelector("img");
+  /* ===== TÍTULO (TOPO) ===== */
+  doc.setFontSize(13);
+  doc.text(`Evidência ${index + 1}`, margemLeft, yBase);
+  yBase += tituloAltura;
 
-	  /* TÍTULO */
-	  doc.setFontSize(13);
-	  doc.text(`Evidência ${index + 1}`, margemLeft, yBase);
-	  yBase += 6;
-	  
-	/* TEXTO */
-	doc.setFontSize(10);
-	
-	const textoAltura = 18;
-	const txt = doc.splitTextToSize(texto || "-", 180);
+  /* ===== DESCRIÇÃO DA IMAGEM ===== */
+  doc.setFontSize(10);
+  doc.rect(margemLeft, yBase - 4, 180, descricaoAltura);
 
-	doc.text(txt.slice(0, 4), margemLeft, yBase);
-	doc.rect(margemLeft, yBase - 5, 180, textoAltura);
-	yBase += textoAltura;
+  const textoSplit = doc.splitTextToSize(texto, 176);
+  doc.text(textoSplit.slice(0, 4), margemLeft + 2, yBase);
 
-  /* IMAGEM */
+  yBase += descricaoAltura + espacamento;
 
-	
-/* IMAGEM */
-		if (img) {
+  /* ===== IMAGEM ===== */
+  if (img) {
+    const boxW = 180;
+    const boxH = imagemAltura;
 
-		  const paginaAltura = doc.internal.pageSize.getHeight();
-		  const rodapeAltura = 25;
+    const dims = ajustarImagemQuadrado(doc, img, boxW, boxH);
 
-		  // espaço real disponível até o rodapé
-		  const boxH = paginaAltura - rodapeAltura - yBase;
-		  const boxW = 180;
+    const xImg = margemLeft + (boxW - dims.w) / 2;
+    const yImg = yBase + (boxH - dims.h) / 2;
 
-		  const dims = ajustarImagemQuadrado(doc, img, boxW, boxH);
+    doc.setDrawColor(0);
+    doc.rect(margemLeft, yBase, boxW, boxH);
 
-		  // centraliza dentro do espaço disponível
-		  const xImg = margemLeft + (boxW - dims.w) / 2;
-		  const yImg = yBase + (boxH - dims.h) / 2;
-
-		  // opcional: moldura
-		  doc.setDrawColor(0);
-		  doc.rect(margemLeft, yBase, boxW, boxH);
-
-		  doc.addImage(
-			img,
-			dims.type,
-			xImg,
-			yImg,
-			dims.w,
-			dims.h
-		  );
-		}
+    doc.addImage(
+      img,
+      dims.type,
+      xImg,
+      yImg,
+      dims.w,
+      dims.h
+    );
+  }
 
 });
-  
 	
 	const totalPaginas = doc.getNumberOfPages();
 
