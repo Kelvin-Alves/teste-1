@@ -530,7 +530,7 @@ async function exportarPDF() {
 	const imgMaxH = 85
 	
 	/* VARIÁVEIS DE LAYOUT DA EVIDÊNCIA */
-	const tituloAltura = 6;
+	const tituloAltura = 5;
 	const descricaoAltura = 22;
 	const espacamento = 5;
 	const imagemAltura = areaAltura - (tituloAltura + descricaoAltura + espacamento);
@@ -567,27 +567,31 @@ async function exportarPDF() {
   yBase += descricaoAltura + espacamento;
 
   /* ===== IMAGEM ===== */
-  if (img) {
-    const boxW = 180;
-    const boxH = imagemAltura;
+  /* ===== IMAGEM ===== */
+	if (img) {
 
-    const dims = ajustarImagem(doc, img, boxW, boxH);
+	  const boxW = 180;
+	  const boxH = imagemAltura;
 
-    const xImg = margemLeft + (boxW - dims.w) / 2;
-    const yImg = yBase + (boxH - dims.h) / 2;
+	  // ✅ USAR CONTAIN
+	  const dims = ajustarImagem(doc, img, boxW, boxH);
 
-    doc.setDrawColor(0);
-    doc.rect(margemLeft, yBase, boxW, boxH);
+	  const xImg = margemLeft + (boxW - dims.w) / 2;
+	  const yImg = yBase + (boxH - dims.h) / 2;
 
-    doc.addImage(
-      img,
-      dims.type,
-      xImg,
-      yImg,
-      dims.w,
-      dims.h
-    );
-  }
+	  // moldura
+	  doc.setDrawColor(0);
+	  doc.rect(margemLeft, yBase, boxW, boxH);
+
+	  doc.addImage(
+		img,
+		dims.type,
+		xImg,
+		yImg,
+		dims.w,
+		dims.h
+	  );
+	}
 
 });
 	
