@@ -503,7 +503,7 @@ async function exportarPDF() {
 	doc.addPage();
 	const evidencias = [...document.querySelectorAll(".evidencia")];
 	
-	const margemTop = 45;
+	const margemTop = desenharCabecalho(doc);
 	const margemLeft = 15;
 	const areaAltura = 130; // espaço vertical por evidência
 	const imgMaxW = 180;
@@ -517,7 +517,7 @@ async function exportarPDF() {
 	  
 	  if (index % 2 === 0 && index !== 0) {
 		doc.addPage();
-		desenharCabecalho(doc);
+		margemTop = desenharCabecalho(doc);
 	  }
 
 
