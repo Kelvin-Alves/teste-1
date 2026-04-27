@@ -600,8 +600,7 @@ async function exportarPDF() {
         (larguraBox - dims.w) / 2;
 
       
-	const yImg =
-	yBase;
+	const yImg = yBase + (imagemAltura - dims.h) / 2;
 
 
       doc.addImage(
