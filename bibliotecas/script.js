@@ -534,11 +534,11 @@ async function exportarPDF() {
 	const tituloAltura = 6;
 	const descricaoAltura = 22;
 	const espacamento = 4;
-	const imagemAltura = areaAltura - tituloAltura - descricaoAltura - espacamento;
 	
 	const alturaPagina = doc.internal.pageSize.getHeight();
 	const alturaRodape = 25; // margem de segurança
 	const limiteInferior = alturaPagina - alturaRodape;
+    const imagemAltura = areaAltura - tituloAltura - descricaoAltura - espacamento;
 
 
 
