@@ -532,81 +532,88 @@ async function exportarPDF() {
 	/* VARIÁVEIS DE LAYOUT DA EVIDÊNCIA */
 	const tituloAltura = 6;
 	const descricaoAltura = 22;
-	const espacamento = 5;
+	const espacamento = 4;
 	const imagemAltura = areaAltura - tituloAltura - descricaoAltura - espacamento;
+	
+	const alturaPagina = doc.internal.pageSize.getHeight();
+	const alturaRodape = 25; // margem de segurança
+	const limiteInferior = alturaPagina - alturaRodape;
+
 
 
   /* ===== EVIDÊNCIAS ===== */
   evidencias.forEach((ev, index) => {
 
-  // === nova página a cada 2 evidências ===
+  // nova página a cada 2 evidências
   if (index % 2 === 0 && index !== 0) {
     doc.addPage();
     margemTop = desenharCabecalho(doc);
   }
 
-  // posição base da evidência
+  const xBase = margemLeft;
   let yBase = margemTop + (index % 2) * areaAltura;
 
   const texto = ev.querySelector(".descricao-input")?.value || "-";
   const img = ev.querySelector("img");
 
-  /* ======================================================
-     CAIXA EXTERNA DA EVIDÊNCIA  (ISSO ESTAVA FALTANDO!)
-     ====================================================== */
-  doc.setDrawColor(0);
-  doc.rect(margemLeft, yBase, 180, areaAltura);
+  yBase += 6; // padding interno
 
-  // padding interno
-  yBase += 6;
-
-  /* ================= TÍTULO ================= */
+  /* ===== TÍTULO ===== */
   doc.setFontSize(13);
-  doc.text(`Evidência ${index + 1}`, margemLeft + 4, yBase);
+  doc.text(`Evidência ${index + 1}`, xBase + 4, yBase);
   yBase += tituloAltura;
 
-  // linha separadora
-  doc.setDrawColor(180);
-  doc.line(margemLeft + 2, yBase - 2, margemLeft + 178, yBase - 2);
 
-  /* ================= DESCRIÇÃO ================= */
+  /* ===== DESCRIÇÃO ===== */
   doc.setFontSize(10);
-  doc.rect(margemLeft + 4, yBase, 172, descricaoAltura);
+  doc.rect(xBase + 4, yBase, 172, descricaoAltura);
 
   const textoSplit = doc.splitTextToSize(texto, 168);
-  doc.text(textoSplit.slice(0, 3), margemLeft + 6, yBase + 6);
+  doc.text(textoSplit.slice(0, 3), xBase + 6, yBase + 6);
 
   yBase += descricaoAltura + espacamento;
 
-  // linha separadora
-  doc.setDrawColor(180);
-  doc.line(margemLeft + 2, yBase - 2, margemLeft + 178, yBase - 2);
 
-  /* ================= IMAGEM ================= */
-  if (img) {
+  /* ===== IMAGEM ===== */
+  
+/* ===== IMAGEM ===== */
+if (img) {
 
-    const boxW = 172;
-    const boxH = imagemAltura;
+  const boxW = 172;
+  let boxH = imagemAltura;
 
-    const dims = ajustarImagem(doc, img, boxW, boxH);
+  const alturaPagina = doc.internal.pageSize.getHeight();
+  const alturaRodape = 25;
+  const limiteInferior = alturaPagina - alturaRodape;
 
-    const xImg = margemLeft + 4 + (boxW - dims.w) / 2;
-    const yImg = yBase + (boxH - dims.h) / 2;
+  // ✅ SE NÃO COUBER → NOVA PÁGINA
+  if (yBase + boxH > limiteInferior) {
+    doc.addPage();
+    margemTop = desenharCabecalho(doc);
 
-    doc.rect(margemLeft + 4, yBase, boxW, boxH);
-
-    doc.addImage(
-      img,
-      dims.type,
-      xImg,
-      yImg,
-      dims.w,
-      dims.h
-    );
+    // reinicia yBase NO TOPO DA EVIDÊNCIA
+    yBase = margemTop + 6;
   }
 
+  const dims = ajustarImagem(doc, img, boxW, boxH);
+
+  const xImg = xBase + 4 + (boxW - dims.w) / 2;
+  const yImg = yBase + (boxH - dims.h) / 2;
+
+  doc.rect(xBase + 4, yBase, boxW, boxH);
+
+  doc.addImage(
+    img,
+    dims.type,
+    xImg,
+    yImg,
+    dims.w,
+    dims.h
+  );
+}
+
 });
-  
+
   
   
 	const totalPaginas = doc.getNumberOfPages();
