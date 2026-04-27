@@ -295,18 +295,25 @@ function carregarImagem(input, id) {
 }
 
 /* ===== FUNÇÃO AUXILIAR: AJUSTAR IMAGEM ===== */
-function ajustarImagem(doc, img, boxW, boxH) {
-  const imgW = img.naturalWidth;
-  const imgH = img.naturalHeight;
+function ajustarImagem(doc, img, maxW, maxH) {
+  const imgW = img.naturalWidth || img.width;
+  const imgH = img.naturalHeight || img.height;
 
-  const scale = Math.min(
-    boxW / imgW,
-    boxH / imgH
-  );
+  // 🔥 FORÇA ESCALA PELA LARGURA
+  const scale = maxW / imgW;
+
+  let w = maxW;
+  let h = imgH * scale;
+
+  // segurança: se estourar altura, ajusta
+  if (h > maxH) {
+    h = maxH;
+    w = (imgW / imgH) * maxH;
+  }
 
   return {
-    w: imgW * scale,
-    h: imgH * scale,
+    w,
+    h,
     type: "JPEG"
   };
 }
