@@ -148,7 +148,6 @@ function validarCamposObrigatorios() {
     alert("⚠️ Preencha a Observação do que foi realizado.");
     return false;
   }
-
   const evidencias = document.querySelectorAll(".evidencia");
 
   if (evidencias.length === 0) {
@@ -201,8 +200,6 @@ function renumerarEvidencias() {
 
 function adicionarEvidencia() {
     contador++;
-
-	
 
     const div = document.createElement("div");
 	
@@ -333,15 +330,17 @@ function ajustarImagemQuadrado(doc, img, boxW, boxH) {
 }
 
 
-function exportarPDF() {
+
+async function exportarPDF() {
 	  if (!validarCamposObrigatorios()) return;
 	  
 	  
-	  const dataHora = new Date().toLocaleString("pt-BR", {
+		const dataHora = new Date().toLocaleString("pt-BR", {
 		  dateStyle: "short",
 		  timeStyle: "short"
-	  });
+		});
 
+	  
 
 	  const { jsPDF } = window.jspdf;
 	  const doc = new jsPDF("p", "mm", "a4");
@@ -350,8 +349,33 @@ function exportarPDF() {
 	  const incidente = document.getElementById("incidenteInput").value;
 	  const field = document.getElementById("fieldInput").value;
 	  const observacao = document.getElementById("obsInput").value;
+	  
+	  
+	const logoEsquerda = document.getElementById("logoEsq").src;
+	console.log(logoEsquerda);
+	const logoDireita  = document.getElementById("logoDir").src;
 
-	  let y = 30;
+	
+	  
+
+	  /* ===== CABEÇALHO ===== */
+	  const margem = 15;
+	  const topo = 10;
+	  const logoW = 35;
+	  const logoH = 18;
+
+	  doc.addImage(logoEsquerda, "PNG", margem, topo, logoW, logoH);
+	  doc.addImage(logoDireita, "PNG", 210 - margem - logoW, topo, logoW, logoH);
+
+	// linha separadora
+	  doc.setDrawColor(180);
+	  doc.line(15, topo + logoH + 4, 195, topo + logoH + 4);
+
+	// posição inicial do conteúdo
+	  let y = topo + logoH + 12;
+
+
+
 
 	  /* ===== TÍTULO ===== */
 	  doc.setFontSize(18);
