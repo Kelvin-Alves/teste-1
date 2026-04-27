@@ -533,20 +533,19 @@ async function exportarPDF() {
 	const tituloAltura = 5;
 	const descricaoAltura = 22;
 	const espacamento = 5;
-	const imagemAltura = areaAltura - (tituloAltura + descricaoAltura + espacamento);
+	const imagemAltura = areaAltura - tituloAltura - descricaoAltura - espacamento;
 
 
   /* ===== EVIDÊNCIAS ===== */
+  evidencias.forEach((ev, index) => {
 
-	evidencias.forEach((ev, index) => {
-
-  // ✅ Nova página a cada 2 evidências
+  // nova página a cada 2 evidências
   if (index % 2 === 0 && index !== 0) {
     doc.addPage();
     margemTop = desenharCabecalho(doc);
   }
 
-  // ✅ Posição base da evidência
+  // ✅ base vertical da evidência
   let yBase = margemTop + (index % 2) * areaAltura;
 
   const texto = ev.querySelector(".descricao-input")?.value || "-";
@@ -557,44 +556,40 @@ async function exportarPDF() {
   doc.text(`Evidência ${index + 1}`, margemLeft, yBase);
   yBase += tituloAltura;
 
-  /* ===== DESCRIÇÃO DA IMAGEM ===== */
+  /* ===== DESCRIÇÃO ===== */
   doc.setFontSize(10);
-  doc.rect(margemLeft, yBase - 4, 180, descricaoAltura);
+  doc.rect(margemLeft, yBase, 180, descricaoAltura);
 
   const textoSplit = doc.splitTextToSize(texto, 176);
-  doc.text(textoSplit.slice(0, 4), margemLeft + 2, yBase);
+  doc.text(textoSplit.slice(0, 3), margemLeft + 2, yBase + 6);
 
   yBase += descricaoAltura + espacamento;
 
   /* ===== IMAGEM ===== */
-  /* ===== IMAGEM ===== */
-	if (img) {
+  if (img) {
 
-	  const boxW = 180;
-	  const boxH = imagemAltura;
+    const boxW = 180;
+    const boxH = imagemAltura;
 
-	  // ✅ USAR CONTAIN
-	  const dims = ajustarImagem(doc, img, boxW, boxH);
+    // ✅ CONTAIN (não vaza)
+    const dims = ajustarImagem(doc, img, boxW, boxH);
 
-	  const xImg = margemLeft + (boxW - dims.w) / 2;
-	  const yImg = yBase + (boxH - dims.h) / 2;
+    const xImg = margemLeft + (boxW - dims.w) / 2;
+    const yImg = yBase + (boxH - dims.h) / 2;
 
-	  // moldura
-	  doc.setDrawColor(0);
-	  doc.rect(margemLeft, yBase, boxW, boxH);
+    doc.rect(margemLeft, yBase, boxW, boxH);
 
-	  doc.addImage(
-		img,
-		dims.type,
-		xImg,
-		yImg,
-		dims.w,
-		dims.h
-	  );
-	}
+    doc.addImage(
+      img,
+      dims.type,
+      xImg,
+      yImg,
+      dims.w,
+      dims.h
+    );
+  }
 
 });
-	
 	const totalPaginas = doc.getNumberOfPages();
 
 	for (let i = 1; i <= totalPaginas; i++) {
