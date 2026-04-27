@@ -525,11 +525,11 @@ async function exportarPDF() {
     const img =
       ev.querySelector("img");
 
-    const paddingTop = 6;
+    const paddingTop = 4;
     const tituloAltura = 8;
-    const descricaoAltura = 22;
+    const descricaoAltura = 16;
     const espacamento = 5;
-    const paddingBottom = 5;
+    const paddingBottom = 3;
 
     const imagemAltura =
       areaAltura -
