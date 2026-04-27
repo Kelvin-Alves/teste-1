@@ -418,7 +418,7 @@ async function exportarPDF() {
 	  const gap = 5;
 	  const boxW = (180 - gap * 2) / 3; // divide igualment
 	  
-	  const limiteInferior = 270; // acima do rodapé
+	  
 
 
 
@@ -525,7 +525,8 @@ async function exportarPDF() {
 	
 	let margemTop = desenharCabecalho(doc);
 	const margemLeft = 15;
-	const areaAltura = 130; // espaço vertical por evidência
+	const espacamentoEntreEvidencias = 10;
+	let yAtual = desenharCabecalho(doc) + 10;
 	const imgMaxW = 180;
 	const imgMaxH = 85
 	
@@ -542,78 +543,59 @@ async function exportarPDF() {
 
 
   /* ===== EVIDÊNCIAS ===== */
-  evidencias.forEach((ev, index) => {
-
-  // nova página a cada 2 evidências
-  if (index % 2 === 0 && index !== 0) {
-    doc.addPage();
-    margemTop = desenharCabecalho(doc);
-  }
-
-  const xBase = margemLeft;
-  let yBase = margemTop + (index % 2) * areaAltura;
+evidencias.forEach((ev, index) => {
 
   const texto = ev.querySelector(".descricao-input")?.value || "-";
   const img = ev.querySelector("img");
 
-  yBase += 6; // padding interno
+  let alturaDescricao = 22;
+  let alturaImagem = 70;
+  let alturaTotal = 10 + alturaDescricao + 5 + alturaImagem + 10;
 
-  /* ===== TÍTULO ===== */
-  doc.setFontSize(13);
-  doc.text(`Evidência ${index + 1}`, xBase + 4, yBase);
-  yBase += tituloAltura;
-
-
-  /* ===== DESCRIÇÃO ===== */
-  doc.setFontSize(10);
-  doc.rect(xBase + 4, yBase, 172, descricaoAltura);
-
-  const textoSplit = doc.splitTextToSize(texto, 168);
-  doc.text(textoSplit.slice(0, 3), xBase + 6, yBase + 6);
-
-  yBase += descricaoAltura + espacamento;
-
-
-  /* ===== IMAGEM ===== */
-  
-/* ===== IMAGEM ===== */
-if (img) {
-
-  const boxW = 172;
-  let boxH = imagemAltura;
-
-  const alturaPagina = doc.internal.pageSize.getHeight();
-  const alturaRodape = 25;
-  const limiteInferior = alturaPagina - alturaRodape;
-
-  // ✅ SE NÃO COUBER → NOVA PÁGINA
-  if (yBase + boxH > limiteInferior) {
+  // se não couber na página → nova página
+  if (yAtual + alturaTotal > 270) {
     doc.addPage();
-    margemTop = desenharCabecalho(doc);
-
-    // reinicia yBase NO TOPO DA EVIDÊNCIA
-    yBase = margemTop + 6;
+    yAtual = desenharCabecalho(doc) + 10;
   }
 
-  const dims = ajustarImagem(doc, img, boxW, boxH);
+  /* TÍTULO */
+  doc.setFontSize(13);
+  doc.text(`Evidência ${index + 1}`, 15, yAtual);
 
-  const xImg = xBase + 4 + (boxW - dims.w) / 2;
-  const yImg = yBase + (boxH - dims.h) / 2;
+  yAtual += 8;
 
-  doc.rect(xBase + 4, yBase, boxW, boxH);
+  /* DESCRIÇÃO */
+  doc.rect(15, yAtual, 180, alturaDescricao);
 
-  doc.addImage(
-    img,
-    dims.type,
-    xImg,
-    yImg,
-    dims.w,
-    dims.h
-  );
-}
+  const textoSplit = doc.splitTextToSize(texto, 176);
+  doc.setFontSize(10);
+  doc.text(textoSplit.slice(0, 3), 17, yAtual + 6);
+
+  yAtual += alturaDescricao + 5;
+
+  /* IMAGEM */
+  if (img) {
+
+    doc.rect(15, yAtual, 180, alturaImagem);
+
+    const dims = ajustarImagem(doc, img, 180, alturaImagem);
+
+    const xImg = 15 + (180 - dims.w) / 2;
+    const yImg = yAtual + (alturaImagem - dims.h) / 2;
+
+    doc.addImage(
+      img,
+      dims.type,
+      xImg,
+      yImg,
+      dims.w,
+      dims.h
+    );
+  }
+
+  yAtual += alturaImagem + espacamentoEntreEvidencias;
 
 });
-
   
   
 	const totalPaginas = doc.getNumberOfPages();
