@@ -351,9 +351,10 @@ async function exportarPDF() {
 	  const observacao = document.getElementById("obsInput").value;
 	  
 	  
-	const logoEsquerda = document.getElementById("logoEsq").src;
-	console.log(logoEsquerda);
-	const logoDireita  = document.getElementById("logoDir").src;
+	
+	const imgEsq = document.getElementById("logoEsq");
+	const imgDir = document.getElementById("logoDir");
+
 
 	
 	  
@@ -364,8 +365,14 @@ async function exportarPDF() {
 	  const logoW = 35;
 	  const logoH = 18;
 
-	  doc.addImage(logoEsquerda, "PNG", margem, topo, logoW, logoH);
-	  doc.addImage(logoDireita, "PNG", 210 - margem - logoW, topo, logoW, logoH);
+	  
+	if (!imgEsq || !imgDir) {
+	  alert("Logos não encontradas no DOM");
+	  return;
+	}
+
+	  doc.addImage(imgEsq.src, "PNG", margem, topo, logoW, logoH);
+	  doc.addImage(imgDir.src, "PNG", 210 - margem - logoW, topo, logoW, logoH);
 
 	// linha separadora
 	  doc.setDrawColor(180);
