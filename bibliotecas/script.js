@@ -505,8 +505,8 @@ async function exportarPDF() {
 
   let margemTop = desenharCabecalho(doc);
 
-  const margemLeft = 10;
-  const larguraBox = 190;
+  const margemLeft = 6;
+  const larguraBox = 198;
 
   const alturaPagina = doc.internal.pageSize.getHeight();
   const margemRodape = 20;
@@ -533,7 +533,7 @@ async function exportarPDF() {
     const img =
       ev.querySelector("img");
 
-    const paddingTop = 4;
+    const paddingTop = 2;
     const tituloAltura = 8;
     const descricaoAltura = 16;
     const espacamento = 3;
