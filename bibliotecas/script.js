@@ -329,6 +329,26 @@ function ajustarImagemQuadrado(doc, img, boxW, boxH) {
   };
 }
 
+function desenharCabecalho(doc) {
+  const imgEsq = document.getElementById("logoEsq");
+  const imgDir = document.getElementById("logoDir");
+
+  const margem = 15;
+  const topo = 10;
+  const logoW = 35;
+  const logoH = 18;
+
+  // logos
+  doc.addImage(imgEsq, "PNG", margem, topo, logoW, logoH);
+  doc.addImage(imgDir, "PNG", 210 - margem - logoW, topo, logoW, logoH);
+
+  // linha separadora
+  doc.setDrawColor(180);
+  doc.line(15, topo + logoH + 4, 195, topo + logoH + 4);
+
+  // retorna onde o conteúdo deve começar
+  return topo + logoH + 12;
+}
 
 
 async function exportarPDF() {
@@ -359,27 +379,9 @@ async function exportarPDF() {
 	
 	  
 
-	  /* ===== CABEÇALHO ===== */
-	  const margem = 15;
-	  const topo = 10;
-	  const logoW = 35;
-	  const logoH = 18;
-
-	  
-	if (!imgEsq || !imgDir) {
-	  alert("Logos não encontradas no DOM");
-	  return;
-	}
-
-	  doc.addImage(imgEsq, "PNG", margem, topo, logoW, logoH);
-	  doc.addImage(imgDir, "PNG", 210 - margem - logoW, topo, logoW, logoH);
-
-	// linha separadora
-	  doc.setDrawColor(180);
-	  doc.line(15, topo + logoH + 4, 195, topo + logoH + 4);
 
 	// posição inicial do conteúdo
-	  let y = topo + logoH + 12;
+	  let y = desenharCabecalho(doc);
 
 
 
@@ -501,7 +503,7 @@ async function exportarPDF() {
 	doc.addPage();
 	const evidencias = [...document.querySelectorAll(".evidencia")];
 	
-	const margemTop = 15;
+	const margemTop = 45;
 	const margemLeft = 15;
 	const areaAltura = 130; // espaço vertical por evidência
 	const imgMaxW = 180;
@@ -515,6 +517,7 @@ async function exportarPDF() {
 	  
 	  if (index % 2 === 0 && index !== 0) {
 		doc.addPage();
+		desenharCabecalho(doc);
 	  }
 
 
