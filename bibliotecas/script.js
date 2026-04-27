@@ -606,27 +606,6 @@ async function exportarPDF() {
     }
   });
 
-  /* ===============================
-     RODAPÉ E PAGINAÇÃO
-  ============================== */
-  const totalPaginas = doc.getNumberOfPages();
-
-  for (let i = 1; i <= totalPaginas; i++) {
-    doc.setPage(i);
-
-    desenharRodape(
-      doc,
-      `${incidente} | ${dataHora} | Página ${i} de ${totalPaginas}`
-    );
-  }
-
-  /* ===============================
-     SALVAR
-  ============================== */
-  doc.save(`${incidente}_Evidencias.pdf`);
-
-  atualizarEstadoBotaoFinalizar();
-}  
   
 	const totalPaginas = doc.getNumberOfPages();
 
