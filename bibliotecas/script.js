@@ -588,7 +588,7 @@ async function exportarPDF() {
 
     if (img) {
 
-      const dims = ajustarImagem(
+      const dims = ajustarImagemQuadrado(
         doc,
         img,
         larguraBox,
