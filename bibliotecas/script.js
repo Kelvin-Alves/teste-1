@@ -571,7 +571,7 @@ async function exportarPDF() {
     const boxW = 180;
     const boxH = imagemAltura;
 
-    const dims = ajustarImagemQuadrado(doc, img, boxW, boxH);
+    const dims = ajustarImagem(doc, img, boxW, boxH);
 
     const xImg = margemLeft + (boxW - dims.w) / 2;
     const yImg = yBase + (boxH - dims.h) / 2;
