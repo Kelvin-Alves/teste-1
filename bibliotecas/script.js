@@ -317,33 +317,17 @@ function ajustarImagem(doc, img, maxW, maxH) {
     type: "JPEG"
   };
 }
-
 function ajustarImagemQuadrado(doc, img, boxW, boxH) {
   const props = doc.getImageProperties(img);
 
-  const ratioContain = Math.min(
+  // 🔥 COVER (ocupa tudo)
+  const ratioCover = Math.max(
     boxW / props.width,
     boxH / props.height
   );
 
-  /* aumenta 8% além do normal */
-  let ratio = ratioContain * 2;
-
-  let w = props.width * ratio;
-  let h = props.height * ratio;
-
-  /* nunca ultrapassar moldura */
-  if (w > boxW) {
-    const fix = boxW / w;
-    w *= fix;
-    h *= fix;
-  }
-
-  if (h > boxH) {
-    const fix = boxH / h;
-    w *= fix;
-    h *= fix;
-  }
+  const w = props.width * ratioCover;
+  const h = props.height * ratioCover;
 
   return {
     w,
@@ -351,6 +335,40 @@ function ajustarImagemQuadrado(doc, img, boxW, boxH) {
     type: props.fileType || "JPEG"
   };
 }
+
+//function ajustarImagemQuadrado(doc, img, boxW, boxH) {
+//  const props = doc.getImageProperties(img);
+//
+//  const ratioContain = Math.min(
+//    boxW / props.width,
+//    boxH / props.height
+//  );
+//
+//  /* aumenta 8% além do normal */
+//  let ratio = ratioContain * 2;
+//
+//  let w = props.width * ratio;
+//  let h = props.height * ratio;
+//
+//  /* nunca ultrapassar moldura */
+ // if (w > boxW) {
+//    const fix = boxW / w;
+//    w *= fix;
+//    h *= fix;
+//  }
+//
+//  if (h > boxH) {
+//    const fix = boxH / h;
+//    w *= fix;
+//    h *= fix;
+//  }
+//
+//  return {
+//    w,
+//    h,
+ //   type: props.fileType || "JPEG"
+//  };
+//}
 
 function desenharCabecalho(doc) {
   const imgEsq = document.getElementById("logoEsq");
@@ -603,29 +621,27 @@ async function exportarPDF() {
 
     if (img) {
 
-      const dims = ajustarImagemQuadrado(
-        doc,
-        img,
-        larguraBox,
-        imagemAltura
-      );
-
-      const xImg =
-        margemLeft +
-        (larguraBox - dims.w) / 2;
-
       
-	const yImg = yBase + (imagemAltura - dims.h) / 2;
+		const dims = ajustarImagemQuadrado(
+		  doc,
+		  img,
+		  larguraBox,
+		  imagemAltura
+		);
 
+		// 🔥 centraliza e deixa sobrar pra fora (crop automático)
+		const xImg = margemLeft + (larguraBox - dims.w) / 2;
+		const yImg = yBase + (imagemAltura - dims.h) / 2;
 
-      doc.addImage(
-        img,
-        dims.type,
-        xImg,
-        yImg,
-        dims.w,
-        dims.h
-      );
+		doc.addImage(
+		  img,
+		  dims.type,
+		  xImg,
+		  yImg,
+		  dims.w,
+		  dims.h
+		);
+
     }
   });
 
