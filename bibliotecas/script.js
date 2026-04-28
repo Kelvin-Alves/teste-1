@@ -636,33 +636,18 @@ async function exportarPDF() {
       descricaoAltura
     );
 
-    const fontSize = 8;
-	const lineHeight = 1.1;
+    doc.setFontSize(6);
+	doc.setLineHeightFactor(1.1);
+    const textoSplit = doc.splitTextToSize(
+      texto,
+      larguraBox - 4
+    );
 
-	doc.setFontSize(fontSize);
-	doc.setLineHeightFactor(lineHeight);
-
-	const textoSplit = doc.splitTextToSize(
-	  texto,
-	  larguraBox - 4
-	);
-
-	// ✅ calcula quantas linhas CABEM no quadrado
-	const alturaLinha = fontSize * lineHeight;
-	const maxLinhas = Math.floor(
-	  (descricaoAltura - 3) / alturaLinha // 3mm de margem interna
-	);
-
-	// ✅ corta antes de desenhar (não vaza nunca)
-	const textoFinal = textoSplit.slice(0, maxLinhas);
-
-	// ✅ desenha dentro do box
-	doc.text(
-	  textoFinal,
-	  margemLeft + 2,
-	  yBase + 4
-	);
-
+    doc.text(
+      textoSplit.slice(0, 3),
+      margemLeft + 2,
+      yBase + 6
+    );
 
     yBase += descricaoAltura + espacamento;
 
