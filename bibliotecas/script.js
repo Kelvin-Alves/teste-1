@@ -607,8 +607,8 @@ async function exportarPDF() {
 
     const paddingTop = 2;
     const tituloAltura = 8;
-    const descricaoAltura = 16;
-    const espacamento = 3;
+    const descricaoAltura = 10;
+    const espacamento = 1;
     const paddingBottom = 3;
 
     const imagemAltura =
@@ -622,7 +622,8 @@ async function exportarPDF() {
     yBase += paddingTop;
 
     /* título */
-    doc.setFontSize(13);
+    doc.setFontSize(8);
+	
     doc.text(`Evidência ${index + 1}`, margemLeft, yBase);
 
     yBase += tituloAltura;
@@ -635,8 +636,8 @@ async function exportarPDF() {
       descricaoAltura
     );
 
-    doc.setFontSize(10);
-
+    doc.setFontSize(8);
+	doc.setLineHeightFactor(1.1);
     const textoSplit = doc.splitTextToSize(
       texto,
       larguraBox - 4
