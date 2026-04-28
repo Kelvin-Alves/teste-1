@@ -294,81 +294,6 @@ function carregarImagem(input, id) {
   reader.readAsDataURL(input.files[0]);
 }
 
-/* ===== FUNÇÃO AUXILIAR: AJUSTAR IMAGEM ===== */
-function ajustarImagem(doc, img, maxW, maxH) {
-  const imgW = img.naturalWidth || img.width;
-  const imgH = img.naturalHeight || img.height;
-
-  // 🔥 FORÇA ESCALA PELA LARGURA
-  const scale = maxW / imgW;
-
-  let w = maxW;
-  let h = imgH * scale;
-
-  // segurança: se estourar altura, ajusta
-  if (h > maxH) {
-    h = maxH;
-    w = (imgW / imgH) * maxH;
-  }
-
-  return {
-    w,
-    h,
-    type: "JPEG"
-  };
-}
-function ajustarImagemQuadrado(doc, img, boxW, boxH) {
-  const props = doc.getImageProperties(img);
-
-  // 🔥 COVER (ocupa tudo)
-  const ratioCover = Math.max(
-    boxW / props.width,
-    boxH / props.height
-  );
-
-  const w = props.width * ratioCover;
-  const h = props.height * ratioCover;
-
-  return {
-    w,
-    h,
-    type: props.fileType || "JPEG"
-  };
-}
-
-//function ajustarImagemQuadrado(doc, img, boxW, boxH) {
-//  const props = doc.getImageProperties(img);
-//
-//  const ratioContain = Math.min(
-//    boxW / props.width,
-//    boxH / props.height
-//  );
-//
-//  /* aumenta 8% além do normal */
-//  let ratio = ratioContain * 2;
-//
-//  let w = props.width * ratio;
-//  let h = props.height * ratio;
-//
-//  /* nunca ultrapassar moldura */
- // if (w > boxW) {
-//    const fix = boxW / w;
-//    w *= fix;
-//    h *= fix;
-//  }
-//
-//  if (h > boxH) {
-//    const fix = boxH / h;
-//    w *= fix;
-//    h *= fix;
-//  }
-//
-//  return {
-//    w,
-//    h,
- //   type: props.fileType || "JPEG"
-//  };
-//}
 
 function desenharCabecalho(doc) {
   const imgEsq = document.getElementById("logoEsq");
@@ -577,7 +502,7 @@ async function exportarPDF() {
 
   let margemTop = desenharCabecalho(doc);
 
-  const margemLeft = 6;
+  const margemLeft = 10;
   const larguraBox = 190;
 
   const alturaPagina = doc.internal.pageSize.getHeight();
