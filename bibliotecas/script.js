@@ -577,7 +577,7 @@ async function exportarPDF() {
 
   let margemTop = desenharCabecalho(doc);
 
-  const margemLeft = 10;
+  const margemLeft = 6;
   const larguraBox = 190;
 
   const alturaPagina = doc.internal.pageSize.getHeight();
