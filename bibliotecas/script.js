@@ -409,6 +409,45 @@ function desenharRodape(doc, texto) {
   );
 }
 
+function desenharImagemCover(doc, img, x, y, boxW, boxH) {
+  const props = doc.getImageProperties(img);
+
+  const imgW = props.width;
+  const imgH = props.height;
+
+  const ratioBox = boxW / boxH;
+  const ratioImg = imgW / imgH;
+
+  let sx = 0, sy = 0, sw = imgW, sh = imgH;
+
+  // 🔥 decide onde cortar
+  if (ratioImg > ratioBox) {
+    // imagem mais larga → corta laterais
+    sw = imgH * ratioBox;
+    sx = (imgW - sw) / 2;
+  } else {
+    // imagem mais alta → corta topo/baixo
+    sh = imgW / ratioBox;
+    sy = (imgH - sh) / 2;
+  }
+
+  doc.addImage(
+    img,
+    props.fileType || "JPEG",
+    x,
+    y,
+    boxW,
+    boxH,
+    undefined,
+    "FAST",
+    0,
+    sx,
+    sy,
+    sw,
+    sh
+  );
+}
+
 async function exportarPDF() {
   if (!validarCamposObrigatorios()) return;
 
@@ -622,25 +661,16 @@ async function exportarPDF() {
     if (img) {
 
       
-		const dims = ajustarImagemQuadrado(
+		
+		desenharImagemCover(
 		  doc,
 		  img,
+		  margemLeft,
+		  yBase,
 		  larguraBox,
 		  imagemAltura
 		);
 
-		// 🔥 centraliza e deixa sobrar pra fora (crop automático)
-		const xImg = margemLeft + (larguraBox - dims.w) / 2;
-		const yImg = yBase + (imagemAltura - dims.h) / 2;
-
-		doc.addImage(
-		  img,
-		  dims.type,
-		  xImg,
-		  yImg,
-		  dims.w,
-		  dims.h
-		);
 
     }
   });
